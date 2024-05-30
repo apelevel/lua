@@ -1,0 +1,45 @@
+local TRIGGER = script.parent
+
+local ENEMY_SPAWN = script:GetCustomProperty("EnemySpawn"):WaitForObject()
+local OBJECT_TEMPLATE = script:GetCustomProperty("ObjectTemplate")
+
+function OnBeginOverlap(trigger, other)
+    if other:IsA("Player") then
+        print(trigger.name .. ": Begin Trigger Overlap with " .. other.name)
+    end
+end
+
+function OnEndOverlap(trigger, other)
+    if other:IsA("Player") then
+        print(trigger.name .. ": End Trigger Overlap with " .. other.name)
+    end
+end
+
+function OnInteracted(trigger, other)
+    if other:IsA("Player") then
+        print(trigger.name .. ": Trigger Interacted with " .. other.name)
+        
+        -- Check if the OBJECT_TEMPLATE and ENEMY_SPAWN are valid
+        if OBJECT_TEMPLATE and ENEMY_SPAWN then
+            print("ObjectTemplate and EnemySpawn are valid.")
+            
+            -- Get the spawn location from the ENEMY_SPAWN object
+            local spawnLocation = ENEMY_SPAWN:GetWorldPosition()
+            print("Spawn Location: " .. tostring(spawnLocation))
+            
+            -- Spawn the object at the ENEMY_SPAWN location
+            local newObject = World.SpawnAsset(OBJECT_TEMPLATE, {position = spawnLocation})
+            print("Spawned object at: " .. tostring(spawnLocation))
+        else
+            print("Error: OBJECT_TEMPLATE or ENEMY_SPAWN is not valid.")
+        end
+    else
+        print("Interaction not by a player.")
+    end
+end
+
+TRIGGER.beginOverlapEvent:Connect(OnBeginOverlap)
+TRIGGER.endOverlapEvent:Connect(OnEndOverlap)
+TRIGGER.interactedEvent:Connect(OnInteracted)
+
+print("Script loaded, waiting for interaction...")
